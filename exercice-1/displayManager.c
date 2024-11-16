@@ -19,21 +19,24 @@ static void *display( void *parameters );
 
 
 void displayManagerInit(void){
-	//TODO
+    pthread_create(&displayThread, NULL, display, NULL);
 }
 
 void displayManagerJoin(void){
-	//TODO	
+    pthread_join(displayThread, NULL);
 } 
 
 static void *display( void *parameters )
 {
-	D(printf("[displayManager]Thread created for display with id %d\n", gettid()));
-	unsigned int diffCount = 0;
-	while(diffCount < DISPLAY_LOOP_LIMIT){
-		sleep(DISPLAY_SLEEP_TIME);
-		//TODO
-	}
-	printf("[displayManager] %d termination\n", gettid());
-   //TODO
+    D(printf("[displayManager]Thread created for display with id %ld\n", pthread_self()));
+    unsigned int diffCount = 0;
+    volatile MSG_BLOCK message;
+    while(diffCount < DISPLAY_LOOP_LIMIT){
+        sleep(DISPLAY_SLEEP_TIME);
+        print(getProducedCount(),getConsumedCount());
+        message = getCurrentSum();
+        messageDisplay(&message);
+    }
+    printf("[displayManager] %ld termination\n", pthread_self());
+    return NULL;
 }
