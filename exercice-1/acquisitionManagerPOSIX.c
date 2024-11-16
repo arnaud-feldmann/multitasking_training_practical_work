@@ -42,6 +42,7 @@ static void incrementProducedCount(void);
 static unsigned int createSynchronizationObjects(void)
 {
     unsigned int ret = 0;
+    for (int i = 0 ; i < NB_CASES ; i++) i_indice_libre[i] = i;
     ret |= sem_init(&libres, 0, NB_CASES);
     ret |= sem_init(&pleines, 0, 0);
     ret |= pthread_mutex_init(&mutex_i_plein, NULL);
