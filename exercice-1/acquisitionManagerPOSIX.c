@@ -138,7 +138,7 @@ void multiWrite(MSG_BLOCK message) {
 
 void *produce(void* params)
 {
-	D(printf("[acquisitionManager]Producer created with id %d\n", gettid()));
+	D(printf("[acquisitionManager]Producer created with id %ld\n", pthread_self()));
 	unsigned int i = 0;
     MSG_BLOCK message;
 	while (i < PRODUCER_LOOP_LIMIT)
