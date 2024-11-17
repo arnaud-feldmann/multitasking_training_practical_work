@@ -76,7 +76,7 @@ MSG_BLOCK getMessage(void){
     sem_wait(&pleines);
     i = i_indice_plein[i_plein];
     i_plein = (i_plein + 1) % NB_CASES; /* pas de mutex car monoread */
-    res = messageBuffer[i_plein];
+    res = messageBuffer[i];
     i_indice_libre[i_libre] = i;
     i_libre = (i_libre + 1) % NB_CASES;
     sem_post(&libres);
