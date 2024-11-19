@@ -68,7 +68,7 @@ static void incrementConsumedCount(void) {
 
 static void *sum( void *parameters )
 {
-    D(printf("[messageAdder]Thread created for sum with id %d\n", pthread_self()));
+    D(printf("[messageAdder] Thread created for sum with id %ld\n", pthread_self()));
     unsigned int i = 0;
     MSG_BLOCK message;
     while(i<ADDER_LOOP_LIMIT){
@@ -82,7 +82,7 @@ static void *sum( void *parameters )
             incrementConsumedCount();
         }
     }
-    printf("[messageAdder] %ld termination\n", pthread_self());
+    D(printf("[messageAdder] %ld termination\n", pthread_self()));
     pthread_mutex_destroy(&mutex_current_sum);
     pthread_mutex_destroy(&mutex_consumed_count);
     return NULL;

@@ -28,7 +28,7 @@ void displayManagerJoin(void){
 
 static void *display( void *parameters )
 {
-    D(printf("[displayManager]Thread created for display with id %ld\n", pthread_self()));
+    D(printf("[displayManager] Thread created for display with id %ld\n", pthread_self()));
     unsigned int diffCount = 0;
     volatile MSG_BLOCK message;
     while(diffCount < DISPLAY_LOOP_LIMIT){
