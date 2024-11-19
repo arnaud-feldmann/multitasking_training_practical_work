@@ -12,5 +12,6 @@ MSG_BLOCK getCurrentSum();
 * Get the number of consumed messages.
 */
 unsigned int getConsumedCount();
+void displayPrint(void);
 
 #endif
