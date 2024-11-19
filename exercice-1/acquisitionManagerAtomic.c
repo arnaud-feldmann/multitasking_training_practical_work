@@ -43,7 +43,7 @@ static void incrementProducedCount(void);
 static unsigned int createSynchronizationObjects(void)
 {
     unsigned int ret = 0;
-    atomic_init(&producedCount, 0);
+    producedCount = 0;
     for (int i = 0 ; i < NB_CASES ; i++) i_indice_libre[i] = i;
     ret |= sem_init(&libres, 0, NB_CASES);
     ret |= sem_init(&pleines, 0, 0);
@@ -56,13 +56,12 @@ static unsigned int createSynchronizationObjects(void)
 
 static void incrementProducedCount(void)
 {
-    atomic_fetch_add(&producedCount, 1);
+    producedCount++;
 }
 
 unsigned int getProducedCount(void)
 {
-    int p = atomic_load(&producedCount);
-	return p;
+	return producedCount;
 }
 
 MSG_BLOCK getMessage(void){
