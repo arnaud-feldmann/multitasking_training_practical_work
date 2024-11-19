@@ -9,6 +9,7 @@
 #include "multitaskingAccumulator.h"
 #include "iAcquisitionManager.h"
 #include "debug.h"
+#include "iDisplay.h"
 
 //consumer thread
 pthread_t consumer;
@@ -16,7 +17,7 @@ pthread_t consumer;
 volatile MSG_BLOCK currentSum;
 //Consumer count storage
 volatile unsigned int consumedCount = 0;
-pthread_mutex_t mutex_consumed_count, mutex_current_sum;
+pthread_mutex_t mutex_current_sum;
 
 /**
  * Increments the consume count.
@@ -39,9 +40,7 @@ MSG_BLOCK getCurrentSum(){
 
 unsigned int getConsumedCount(){
     unsigned int res;
-    pthread_mutex_lock(&mutex_consumed_count);
     res = consumedCount;
-    pthread_mutex_unlock(&mutex_consumed_count);
     return res;
 }
 
@@ -52,7 +51,6 @@ void messageAdderInit(void){
         currentSum.mData[i] = 0;
     }
     pthread_mutex_init(&mutex_current_sum, NULL);
-    pthread_mutex_init(&mutex_consumed_count, NULL);
     pthread_create(&consumer, NULL, sum, NULL);
 }
 
@@ -61,9 +59,16 @@ void messageAdderJoin(void){
 }
 
 static void incrementConsumedCount(void) {
-    pthread_mutex_lock(&mutex_consumed_count);
     consumedCount++;
-    pthread_mutex_unlock(&mutex_consumed_count);
+}
+
+void displayPrint()   {
+    volatile MSG_BLOCK message;
+    pthread_mutex_lock(&mutex_current_sum);
+    print(getProducedCount(),getConsumedCount());
+    message = currentSum;
+    messageDisplay(&message);
+    pthread_mutex_unlock(&mutex_current_sum);
 }
 
 static void *sum( void *parameters )
@@ -78,13 +83,12 @@ static void *sum( void *parameters )
         if (messageCheck(&message)) {
             pthread_mutex_lock(&mutex_current_sum);
             messageAdd(&currentSum, &message);
-            pthread_mutex_unlock(&mutex_current_sum);
             incrementConsumedCount();
+            pthread_mutex_unlock(&mutex_current_sum);
         }
     }
     D(printf("[messageAdder] %ld termination\n", pthread_self()));
     pthread_mutex_destroy(&mutex_current_sum);
-    pthread_mutex_destroy(&mutex_consumed_count);
     return NULL;
 }
 
