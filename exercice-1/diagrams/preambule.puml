@@ -1,117 +1,57 @@
-
 @startuml
 !pragma teoz true
+box "process"
+participant bash
 
-box "main process" #lightblue
+box "main process (child process)" #lightblue
 participant "main" as main
-participant "producers[0]:pthread_t" as producers0
-participant "producers[1]:pthread_t" as producers1
-participant "mutex_i_libre:pthread_mutex_t" as mutex_i_libre
-participant "mutex_i_plein:pthread_mutex_t" as mutex_i_plein
-participant "libres:sem_t (1000)" as libres
-participant "pleines:sem_t (0)" as pleines
-participant "mutex_read:pthread_mutex_t" as mutex_read
-participant "acquisitionManager" as acquisition_manager
-participant "consumer:pthread_t" as consumer
-participant "mutex_sum:pthread_mutex_t" as mutex_sum
-participant "messageAdder" as message_adder
-participant "display:pthread_t" as display
+participant "thread_1:pthread_t" as thread1
+participant "mutex:pthread_mutex_t" as mutex
+participant "semaphore:sem_t" as semaphore
+end box
 end box
 
-activate main #FFBBBB
+activate bash
+bash -> main --++ : "./preambule"
 
-main -> producers0:"pthread_create"
-activate producers0 #FFBBBB
-main -> producers1:"pthread_create"
-activate producers1 #FFBBBB
-main -> consumer:"pthread_create"
-activate consumer #FFBBBB
-main -> display:"pthread_create"
-activate display #FFBBBB
-
-consumer -> acquisition_manager:"getMessage"
-deactivate message_adder
-activate acquisition_manager
-note over acquisition_manager : getMessage
-
-acquisition_manager -> pleines:"sem_wait"
-activate pleines #gold
+main -> semaphore:"sem_unlink"
+activate semaphore #gold
 return
-deactivate acquisition_manager
-
-producers0 -> acquisition_manager:"produce"
-activate acquisition_manager
-note over acquisition_manager : produce
-
-acquisition_manager -> libres:"sem_wait"
-activate libres #gold
+main -> semaphore:"sem_open"
+activate semaphore #gold
 return
 
-acquisition_manager -> mutex_i_libre: "pthread_mutex_lock"
-activate mutex_i_libre #plum
+main -> thread1:"pthread_create"
+activate thread1 #FFBBBB
+thread1 --> main
+note over thread1 : produce
+
+main -> thread1 :"pthread_join"
+deactivate main
+
+thread1 -> mutex: "pthread_mutex_lock"
+activate mutex #plum
 return
 
-note over acquisition_manager : [pop i_indice_libre with i_libre]
-note over acquisition_manager : [inc  i_libre]
-
-acquisition_manager -> mutex_i_libre: "pthread_mutex_unlock"
-activate mutex_i_libre #plum
+thread1 -> mutex: "pthread_mutex_unlock"
+activate mutex #plum
 return
 
-note over acquisition_manager : write
-
-acquisition_manager -> mutex_i_plein: "pthread_mutex_lock"
-activate mutex_i_plein #plum
+thread1 -> semaphore: "sem_post"
+activate semaphore #gold
 return
 
-note over acquisition_manager : [push i_indice_plein with i_plein]
-note over acquisition_manager : [inc  i_plein]
-
-acquisition_manager -> mutex_i_plein: "pthread_mutex_unlock"
-activate mutex_i_plein #plum
+thread1 -> semaphore: "sem_wait"
+activate semaphore #gold
 return
 
-acquisition_manager -> pleines:"sem_post"
-activate pleines #gold
+thread1 -> thread1 : "pthread_exit"
+thread1 --> main --++
+
+main -> semaphore : "sem_destroy"
+activate semaphore #gold
 return
 
-acquisition_manager --> producers0
-deactivate acquisition_manager
+main -> bash --++: "return"
 
-activate pleines #gold
-pleines --> acquisition_manager:"réveil de sem_wait"
-deactivate pleines
-activate acquisition_manager
-note over acquisition_manager : getMessage
-
-note over acquisition_manager : [pop t_indice_plein]
-note over acquisition_manager : [read]
-note over acquisition_manager : [push t_indice_libre]
-
-acquisition_manager -> libres:"sem_post"
-activate libres #gold
-return
-
-acquisition_manager --> consumer:"return getMessage"
-deactivate acquisition_manager
-
-consumer -> mutex_sum:"pthread_mutex_lock"
-activate mutex_sum #plum
-return
-
-display -> message_adder:"getStats"
-activate message_adder
-message_adder -> mutex_sum:"pthread_mutex_lock"
-activate mutex_sum #plum
-return
-
-consumer -> mutex_sum:"pthread_mutex_unlock"
-activate mutex_sum #plum
-return
-
-message_adder -> mutex_sum:"pthread_mutex_unlock"
-activate mutex_sum #plum
-return
-
-message_adder --> display:"return"
-deactivate message_adder
+@enduml
