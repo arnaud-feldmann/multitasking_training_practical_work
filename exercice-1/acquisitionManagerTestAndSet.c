@@ -58,12 +58,12 @@ static unsigned int createSynchronizationObjects(void)
 
 static int pCountLockTake() {
     int res = 0;
-    res = atomic_compare_exchange_weak(&lock_producedCount,&res, 1);
+    atomic_compare_exchange_weak(&lock_producedCount,&res, 1);
     return ! res;
 }
 
 static void pCountLockRelease() {
-    atomic_store(&lock_producedCount, 1);
+    atomic_store(&lock_producedCount, 0);
 }
 
 static void incrementProducedCount(void)
