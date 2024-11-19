@@ -10,7 +10,6 @@
 #include "multitaskingAccumulator.h"
 #include "iAcquisitionManager.h"
 #include "debug.h"
-#include <stdatomic.h>
 #define NB_CASES 1000
 
 //producer count storage
