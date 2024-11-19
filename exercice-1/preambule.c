@@ -16,17 +16,17 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *produce(void *params)
 {
-    printf("Trying to own the mutex\n");
+    printf("[produce] Trying to own the mutex\n");
     pthread_mutex_lock(&mutex);
-    printf("Owns the mutex\n");
+    printf("[produce] Owns the mutex\n");
     pthread_mutex_unlock(&mutex);
-    printf("Mutex released\n");
+    printf("[produce] Mutex released\n");
     sem_post(semaphore);
-    printf("Semaphore posted\n");
-    printf("Trying to gets the semaphore\n");
+    printf("[produce] Semaphore posted\n");
+    printf("[produce] Trying to gets the semaphore\n");
     sem_wait(semaphore);
-    printf("Semaphore taken\n");
-    printf("Thread ended\n");
+    printf("[produce] Semaphore taken\n");
+    printf("[produce] Thread ended\n");
     pthread_exit(NULL);
 }
 

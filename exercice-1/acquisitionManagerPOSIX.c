@@ -49,7 +49,7 @@ static unsigned int createSynchronizationObjects(void)
     ret |= pthread_mutex_init(&mutex_i_libre, NULL);
     ret |= pthread_mutex_init(&mutex_produced_count, NULL);
     if (ret) return ERROR_INIT;
-	printf("[acquisitionManager]Semaphore created\n");
+	printf("[acquisitionManager] Semaphore created\n");
 	return ERROR_SUCCESS;
 }
 
@@ -88,12 +88,12 @@ MSG_BLOCK getMessage(void){
 unsigned int acquisitionManagerInit(void)
 {
 	unsigned int i;
-	printf("[acquisitionManager]Synchronization initialization in progress...\n");
+	printf("[acquisitionManager] Synchronization initialization in progress...\n");
 	fflush( stdout );
 	if (createSynchronizationObjects() == ERROR_INIT)
 		return ERROR_INIT;
 	
-	printf("[acquisitionManager]Synchronization initialization done.\n");
+	printf("[acquisitionManager] Synchronization initialization done.\n");
 
 	for (i = 0; i < PRODUCER_COUNT; i++)
 	{
@@ -116,7 +116,7 @@ void acquisitionManagerJoin(void)
     pthread_mutex_destroy(&mutex_i_plein);
     pthread_mutex_destroy(&mutex_i_libre);
     pthread_mutex_destroy(&mutex_produced_count);
-	printf("[acquisitionManager]Semaphore cleaned\n");
+	printf("[acquisitionManager] Semaphore cleaned\n");
 }
 
 void multiWrite(MSG_BLOCK message) {
@@ -138,7 +138,7 @@ void multiWrite(MSG_BLOCK message) {
 
 void *produce(void* params)
 {
-	D(printf("[acquisitionManager]Producer created with id %ld\n", pthread_self()));
+	D(printf("[acquisitionManager] Producer created with id %ld\n", pthread_self()));
 	unsigned int i = 0;
     MSG_BLOCK message;
 	while (i < PRODUCER_LOOP_LIMIT)
