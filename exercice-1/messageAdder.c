@@ -62,13 +62,17 @@ static void incrementConsumedCount(void) {
     consumedCount++;
 }
 
-void displayPrint()   {
+stats_t getStats(){
     volatile MSG_BLOCK message;
     pthread_mutex_lock(&mutex_current_sum);
-    print(getProducedCount(),getConsumedCount());
     message = currentSum;
-    messageDisplay(&message);
+    stats_t stats = {
+        .producedCount = getProducedCount(),
+        .consumedCount = getConsumedCount(),
+        .currentSum = message
+    };
     pthread_mutex_unlock(&mutex_current_sum);
+    return stats;
 }
 
 static void *sum( void *parameters )

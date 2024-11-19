@@ -2,8 +2,7 @@
 #include <stdio.h>
 #include <pthread.h>
 #include "displayManager.h"
-#include "iAcquisitionManager.h"
-#include "iAcquisitionManager.h"
+#include "iDisplay.h"
 #include "iMessageAdder.h"
 #include "msg.h"
 #include "multitaskingAccumulator.h"
@@ -30,10 +29,15 @@ static void *display( void *parameters )
 {
     D(printf("[displayManager] Thread created for display with id %ld\n", pthread_self()));
     unsigned int diffCount = 0;
+    stats_t stats;
+
     while(diffCount < DISPLAY_LOOP_LIMIT){
         sleep(DISPLAY_SLEEP_TIME);
-        displayPrint();
+        stats = getStats();
+        print(stats.producedCount, stats.consumedCount);
+        messageDisplay(&stats.currentSum);
     }
+
     printf("[displayManager] %ld termination\n", pthread_self());
     return NULL;
 }

@@ -16,4 +16,13 @@ void messageDisplay(volatile MSG_BLOCK* mBlock);
 */
 void print(unsigned int producedCount, unsigned int consumedCount);
 
+typedef struct stats_s {
+    unsigned int producedCount;
+    unsigned int consumedCount;
+    MSG_BLOCK currentSum;
+} stats_t;
+
+
+stats_t getStats();
+
 #endif
