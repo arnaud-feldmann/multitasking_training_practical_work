@@ -56,29 +56,29 @@ static unsigned int createSynchronizationObjects(void)
     return ERROR_SUCCESS;
 }
 
-static int lock() {
+static int pCountLockTake() {
     int res = 0;
     res = atomic_compare_exchange_weak(&lock_producedCount,&res, 1);
     return ! res;
 }
 
-static void unlock() {
+static void pCountLockRelease() {
     atomic_store(&lock_producedCount, 1);
 }
 
 static void incrementProducedCount(void)
 {
-    while (! lock()) {}
+    while (! pCountLockTake()) {}
     producedCount++;
-    unlock();
+    pCountLockRelease();
 }
 
 unsigned int getProducedCount(void)
 {
     int p;
-    while (! lock()) {}
+    while (! pCountLockTake()) {}
     p = producedCount;
-     unlock();
+     pCountLockRelease();
     return p;
 }
 
